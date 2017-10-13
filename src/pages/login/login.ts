@@ -37,4 +37,13 @@ export class LoginPage {
       });
     });
   }
+
+  signInAnonymously(): void {
+    this.authProvider.signInAnonymously().then( data => {
+      this.navCtrl.setRoot(HomePage).then( data => {
+        console.log(this.fire.auth.currentUser);
+        this.navCtrl.popToRoot();
+      });
+    });
+  }
 }

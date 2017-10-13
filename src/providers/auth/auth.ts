@@ -61,4 +61,8 @@ export class AuthProvider {
         console.log(error);
       });
   }
+
+  signInAnonymously(): Promise<any> {
+    return this.afAuth.auth.signInAnonymously();
+  }
 }
