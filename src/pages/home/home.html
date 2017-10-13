@@ -1,0 +1,155 @@
+<ion-menu [content]="nav" id="settings" side="left">
+  <ion-content>
+    <ion-list>
+      <button ion-item (click)="logOut()">Log Out</button>
+    </ion-list>
+  </ion-content>
+</ion-menu>
+
+<ion-menu [content]="nav" id="filter" side="right" class="filterMenu">
+  <ion-content>
+    <ion-list>
+      <ion-item>
+        <ion-label>Distance</ion-label>
+        <ion-label style="text-align: right;">{{ radius }}</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-range min="0" max="150" [(ngModel)]="radius" (ionChange)="updateDistance()">
+          <ion-label range-left>0</ion-label>
+          <ion-label range-right>150</ion-label>
+        </ion-range>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Formats</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label>Standard</ion-label>
+        <ion-checkbox [(ngModel)]="standard" (ionChange)="updateFormat  ('standard')"></ion-checkbox>
+      </ion-item>
+      <ion-item>
+        <ion-label>EDH/Commander</ion-label>
+        <ion-checkbox [(ngModel)]="edh" (ionChange)="updateFormat('edh')"></ion-checkbox>
+      </ion-item>
+      <ion-item>
+        <ion-label>Modern</ion-label>
+        <ion-checkbox [(ngModel)]="modern" (ionChange)="updateFormat('modern')"></ion-checkbox>
+      </ion-item>
+      <ion-item>
+        <ion-label>Legacy</ion-label>
+        <ion-checkbox [(ngModel)]="legacy" (ionChange)="updateFormat('legacy')"></ion-checkbox>
+      </ion-item>
+      <ion-item>
+        <ion-label>Vintage</ion-label>
+        <ion-checkbox [(ngModel)]="vintage" (ionChange)="updateFormat('vintage')"></ion-checkbox>
+      </ion-item>
+      <ion-item>
+        <ion-label>Limited</ion-label>
+        <ion-checkbox [(ngModel)]="limited" (ionChange)="updateFormat('limited')"></ion-checkbox>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Sanctioned</ion-label>
+        <ion-toggle [(ngModel)]="sanctioned" disabled="false" (ionChange)="updateSanctioned()"></ion-toggle>
+      </ion-item>
+
+      <ion-item>
+        <button ion-button (click)="loadItems()">Search</button>
+      </ion-item>
+
+    </ion-list>
+  </ion-content>
+</ion-menu>
+
+<ion-nav #nav [root]="rootPage"></ion-nav>
+
+
+<ion-header>
+  <ion-navbar style="text-align: center">
+
+    <ion-buttons left>
+      <button ion-button icon-only item-left (click)="toggleSettings()">
+        <ion-icon name="menu"></ion-icon>
+      </button>
+    </ion-buttons>
+
+    <ion-title>
+      Battles
+    </ion-title>
+
+    <ion-buttons end>
+      <button ion-button icon-only item-right (click)="toggleFilter()">
+        <ion-icon name="search"></ion-icon>
+      </button>
+    </ion-buttons>
+
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="home" overflow-scroll="true">
+
+  <!--<button ion-button (click)="loadItems()">Load Data</button>-->
+  <ion-fab bottom right style="margin: 2%">
+    <button id="newBattleFAB" ion-fab color="primary" (click)="newBattle()"><ion-icon name="add"></ion-icon></button>
+  </ion-fab>
+
+  <ion-list [virtualScroll]="battles">
+
+    <ion-card *virtualItem="let battle" (click)="openDetails(battle)">
+
+      <ion-item>
+        <ion-avatar item-start>
+          <img src="../../assets/icon/mtg.png">
+        </ion-avatar>
+        <h2>{{ battle.name }}</h2>
+      </ion-item>
+
+      <ion-card-content>
+        <p> {{ battle.description }}</p>
+      </ion-card-content>
+
+      <ion-row responsive-sm wrap>
+        <ion-col *ngFor="let format of battle.formats" class="posttags">
+          <span>{{ format }}</span>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col>
+          <div ion-button icon-left clear small>
+            <ion-icon name="pin"></ion-icon>
+            <div>{{ battle.distance / 1000 }} km</div>
+          </div>
+        </ion-col>
+
+        <ion-col>
+          <div ion-button icon-left clear small *ngIf="battle.sanctioned">
+            <ion-icon name="checkmark"></ion-icon>
+            <div>Sanctioned</div>
+          </div>
+          <div ion-button icon-left clear small *ngIf="!battle.sanctioned">
+            <ion-icon name="close"></ion-icon>
+            <div>Unsanctioned</div>
+          </div>
+        </ion-col>
+
+        <ion-col>
+          <div>
+            <button ion-button>Details</button>
+          </div>
+        </ion-col>
+
+      </ion-row>
+
+    </ion-card>
+  </ion-list>
+
+  <ion-infinite-scroll (ionInfinite)="doInfinite($event)" *ngIf="moreResults">
+    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data..."></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+  <div class="changeFilterButton" *ngIf="!moreResults">
+    <button ion-button>Change Filters</button>
+  </div>
+
+</ion-content>
